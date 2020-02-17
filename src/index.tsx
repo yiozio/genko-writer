@@ -1,4 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-ReactDOM.render(<div />, document.getElementById('genko'));
+import Main from './Main';
+
+ReactDOM.render(<Main />, document.getElementById('genko'));
