@@ -1,0 +1,35 @@
+{
+  "name": "genko-writer",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "rimraf public/dist && webpack",
+    "build:prod": "rimraf public/dist && webpack --mode 'production'",
+    "lint:unit": "tslint -c tslint.json",
+    "lint:all": "tslint -c tslint.json \"src/**/*.ts?(x)\""
+  },
+  "dependencies": {
+    "classnames": "^2.2.6",
+    "draft-js": "^0.11.4",
+    "mobx": "^5.15.4",
+    "mobx-react": "^6.1.8",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "styled-components": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/classnames": "^2.2.9",
+    "@types/react": "^16.9.19",
+    "@types/react-dom": "^16.9.5",
+    "@types/styled-components": "^4.4.3",
+    "prettier": "^1.19.1",
+    "rimraf": "^3.0.2",
+    "ts-loader": "^6.2.1",
+    "tslint": "^6.0.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.1.0",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
+  }
+}

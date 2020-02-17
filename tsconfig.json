@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "noUnusedLocals" : true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "outDir": "./src_js/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "lib": ["dom", "es2017"],
+    "module": "es2015",
+    "target": "es5",
+    "jsx": "react",
+    "baseUrl": "./",
+    "experimentalDecorators": true,
+    "paths": {
+      "*": ["./src/modules/*"],
+      "src/*": ["./src/*"]
+    },
+    "rootDirs": [
+      "./src/"
+    ]
+  }
+}
