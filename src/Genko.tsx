@@ -10,9 +10,10 @@ type DomProps = {
   pageCount: number;
   state: EditorState;
   setState: (state: EditorState) => void;
+  setEditorWidth: (width: number) => void;
 };
 
-const Dom = ({ className, pageCount, state, setState }: DomProps) => (
+const Dom = ({ className, pageCount, state, setState, setEditorWidth }: DomProps) => (
   <div className={className}>
     <div>
       {Array.from(Array(Math.max(2, pageCount))).map((_, i) => (
@@ -33,7 +34,11 @@ const Dom = ({ className, pageCount, state, setState }: DomProps) => (
           ))}
         </div>
       ))}
-      <Editor editorState={state} onChange={setState} />
+      <Editor
+        ref={ref => (ref ? setEditorWidth((ref as any).editorContainer.clientWidth) : undefined)}
+        editorState={state}
+        onChange={setState}
+      />
     </div>
   </div>
 );
@@ -63,9 +68,8 @@ const squaresInput: CSSObject = {
   fontFamily: ['hankaku', 'zenkaku'].join(','),
   position: 'absolute',
   right: 6,
-  top: 1,
-  width: '100%',
-  height: 'calc(100% + 3px)',
+  top: 43,
+  height: 481,
   '&:focus, &:active': {
     boxShadow: 'none',
     border: 'none',
@@ -74,9 +78,13 @@ const squaresInput: CSSObject = {
 };
 const squares: CSSObject = {
   position: 'relative',
-  height: '100%',
+  height: 'calc(100% - 86px)',
+  padding: '42px 0',
   display: 'flex',
   flexFlow: 'row-reverse nowrap',
+  background: '#FFE',
+  overflowX: 'scroll',
+  overflowY: 'hidden',
 
   '& > div:not(:last-child)': {
     position: 'relative',
@@ -97,35 +105,22 @@ const squares: CSSObject = {
 
 const Styled = styled(Dom)({
   background: '#FFE',
-  height: 481,
+  height: 565,
   margin: '20px auto',
-  padding: '42px 48px',
   position: 'relative',
   '& > div': squares
 });
 
 export default function Genko() {
   const [state, setState] = React.useState(EditorState.createEmpty());
-  let textRowCount = 0;
-  state
-    .getCurrentContent()
-    .getBlocksAsArray()
-    .forEach(block => {
-      textRowCount += 1;
-      let charCount = 0;
-      const text = block.getText();
-      for (let i = 0; i < text.length; i++) {
-        const charCode = text.charCodeAt(i);
-        const charWeight = charCode <= 0xff || (charCode <= 0xff65 && 0xff9f <= charCode) ? 1 : 2;
-        charCount += charWeight;
-        if (charCount === 41 && charWeight === 2) {
-          charCount -= 39;
-          textRowCount += 1;
-        } else if (charCount > 40) {
-          charCount -= 40;
-          textRowCount += 1;
-        }
-      }
-    });
-  return <Styled pageCount={Math.floor(textRowCount / 10 + 1)} state={state} setState={setState} />;
+  const [width, setWidth] = React.useState(0);
+
+  return (
+    <Styled
+      pageCount={Math.ceil(width / 340)}
+      state={state}
+      setState={setState}
+      setEditorWidth={setWidth}
+    />
+  );
 }

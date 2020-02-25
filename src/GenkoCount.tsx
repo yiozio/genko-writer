@@ -18,7 +18,7 @@ const Dom = ({ className, children }: DomProps) => (
 const Styled = styled(Dom)({
   position: 'absolute',
   right: '0',
-  top: '-15px',
+  top: '-16px',
   color: '#BC4',
   fontSize: '8px',
   fontFamily: 'sans-serif',
