@@ -1,18 +1,29 @@
 import * as React from 'react';
 import styled, { CSSObject } from 'styled-components';
+import { Editor, EditorState } from 'draft-js';
+
+import GenkoCount from './GenkoCount';
+import GenkoDesc from './GenkoDesc';
 
 type DomProps = {
   className?: string;
+  pageCount: number;
+  state: EditorState;
+  setState: (state: EditorState) => void;
 };
 
-const Dom = ({ className }: DomProps) => (
+const Dom = ({ className, pageCount, state, setState }: DomProps) => (
   <div className={className}>
     <div>
-      No. <span>1</span>
-    </div>
-    <div>
-      {Array.from(Array(2)).map((_, i) => (
+      {Array.from(Array(Math.max(2, pageCount))).map((_, i) => (
         <div key={i}>
+          {i % 2 === 0 ? (
+            <GenkoCount>
+              {Math.floor(i / 2 + 1) + ' / ' + Math.floor(pageCount / 2 + 0.5)}
+            </GenkoCount>
+          ) : (
+            <GenkoDesc />
+          )}
           {Array.from(Array(10)).map((_, j) => (
             <div key={j}>
               {Array.from(Array(19)).map((_, k) => (
@@ -22,57 +33,11 @@ const Dom = ({ className }: DomProps) => (
           ))}
         </div>
       ))}
+      <Editor editorState={state} onChange={setState} />
     </div>
-    <div>20 × 20</div>
   </div>
 );
 
-const pageCount: CSSObject = {
-  position: 'absolute',
-  right: '52px',
-  top: '28px',
-  color: '#BC4',
-  fontSize: '8px',
-  fontFamily: 'sans-serif',
-  '& > span': {
-    color: '#000',
-    display: 'inline-block',
-    textAlign: 'center',
-    lineHeight: '10px',
-    width: '20px',
-    borderBottom: 'solid 1px #BC4'
-  }
-};
-const pageDesc: CSSObject = {
-  position: 'absolute',
-  left: '52px',
-  bottom: '28px',
-  color: '#BC4',
-  fontSize: '8px',
-  fontFamily: 'sans-serif'
-};
-const gyobi: CSSObject = {
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    width: '6px',
-    height: '6px',
-    top: '20%',
-    left: 'calc(50% - 3px)',
-    borderRadius: '50%',
-    background: '#BC4'
-  },
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    width: '6px',
-    height: '6px',
-    bottom: '20%',
-    left: 'calc(50% - 3px)',
-    borderRadius: '50%',
-    background: '#BC4'
-  }
-};
 const squaresRow: CSSObject = {
   width: 23,
   height: '100%',
@@ -80,7 +45,7 @@ const squaresRow: CSSObject = {
   borderLeft: 'solid 1px #BC4',
   borderRight: 'solid 1px #BC4',
 
-  '&:first-child': {
+  '&:last-child': {
     borderLeft: 'none'
   },
   '& > div': {
@@ -89,46 +54,78 @@ const squaresRow: CSSObject = {
     borderBottom: 'solid 1px #BC4'
   }
 };
+const squaresInput: CSSObject = {
+  writingMode: 'vertical-rl',
+  fontSize: 23,
+  lineHeight: '34px',
+  letterSpacing: 1,
+  color: '#000',
+  fontFamily: ['hankaku', 'zenkaku'].join(','),
+  position: 'absolute',
+  right: 6,
+  top: 1,
+  width: '100%',
+  height: 'calc(100% + 3px)',
+  '&:focus, &:active': {
+    boxShadow: 'none',
+    border: 'none',
+    outline: 'none'
+  }
+};
 const squares: CSSObject = {
   position: 'relative',
-  width: '100%',
   height: '100%',
-  border: 'solid 1px #BC4',
-  boxSizing: 'border-box',
-  ...gyobi,
+  display: 'flex',
+  flexFlow: 'row-reverse nowrap',
 
-  '& > div': {
-    position: 'absolute',
-    top: 0,
+  '& > div:not(:last-child)': {
+    position: 'relative',
     height: '100%',
-    display: 'flex',
-    left: 'auto',
-    right: 0,
-    borderLeft: 'solid 1px #BC4',
+    border: 'solid 1px #BC4',
+    borderLeft: 'solid 1px #000',
     borderRight: 'none',
+    display: 'flex',
+    flexFlow: 'row-reverse nowrap',
 
-    '&:last-child': {
-      left: 0,
-      right: 'auto',
-      borderLeft: 'none',
+    '&:first-child': {
       borderRight: 'solid 1px #BC4'
     },
-    '& > div': squaresRow
-  }
+    '& > div:not(:first-child)': squaresRow
+  },
+  '& > div:last-child': squaresInput
 };
 
 const Styled = styled(Dom)({
   background: '#FFE',
-  width: 704,
   height: 481,
   margin: '20px auto',
   padding: '42px 48px',
   position: 'relative',
-  '& > div:nth-child(1)': pageCount,
-  '& > div:nth-child(2)': squares,
-  '& > div:nth-child(3)': pageDesc
+  '& > div': squares
 });
 
 export default function Genko() {
-  return <Styled />;
+  const [state, setState] = React.useState(EditorState.createEmpty());
+  let textRowCount = 0;
+  state
+    .getCurrentContent()
+    .getBlocksAsArray()
+    .forEach(block => {
+      textRowCount += 1;
+      let charCount = 0;
+      const text = block.getText();
+      for (let i = 0; i < text.length; i++) {
+        const charCode = text.charCodeAt(i);
+        const charWeight = charCode <= 0xff || (charCode <= 0xff65 && 0xff9f <= charCode) ? 1 : 2;
+        charCount += charWeight;
+        if (charCount === 41 && charWeight === 2) {
+          charCount -= 39;
+          textRowCount += 1;
+        } else if (charCount > 40) {
+          charCount -= 40;
+          textRowCount += 1;
+        }
+      }
+    });
+  return <Styled pageCount={Math.floor(textRowCount / 10 + 1)} state={state} setState={setState} />;
 }

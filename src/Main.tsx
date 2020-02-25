@@ -5,16 +5,18 @@ import Genko from './Genko';
 
 const GlobalStyle = createGlobalStyle({
   '@font-face': {
-    fontFamily: 'GenEiKobur',
+    fontFamily: 'zenkaku',
     fontStyle: 'normal',
     fontWeight: 'normal',
     src: 'url("/GenEiKoburiMin6-R.ttf") format("truetype")'
   },
+  '@font-face ': {
+    fontFamily: 'hankaku',
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    src: 'url("/Inconsolata-Regular.ttf") format("truetype")'
+  },
   body: {
-    fontFamily: 'GenEiKobur',
-    fontSize: '12px',
-    lineHeight: '12px',
-    color: '#000',
     overflow: 'hidden'
   }
 });
