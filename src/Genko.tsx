@@ -65,7 +65,7 @@ const squaresInput: CSSObject = {
   lineHeight: '34px',
   letterSpacing: 1,
   color: '#000',
-  fontFamily: ['hankaku', 'zenkaku'].join(','),
+  fontFamily: 'mincho',
   position: 'absolute',
   right: 6,
   top: 43,
