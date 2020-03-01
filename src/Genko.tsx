@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled, { CSSObject } from 'styled-components';
-import { Editor, EditorState } from 'draft-js';
 
 import GenkoCount from './GenkoCount';
 import GenkoDesc from './GenkoDesc';
@@ -8,12 +7,12 @@ import GenkoDesc from './GenkoDesc';
 type DomProps = {
   className?: string;
   pageCount: number;
-  state: EditorState;
-  setState: (state: EditorState) => void;
+  text: string;
+  setText: (text: string) => void;
   setEditorWidth: (width: number) => void;
 };
 
-const Dom = ({ className, pageCount, state, setState, setEditorWidth }: DomProps) => (
+const Dom = ({ className, pageCount, text, setText, setEditorWidth }: DomProps) => (
   <div className={className}>
     <div>
       {Array.from(Array(Math.max(2, pageCount))).map((_, i) => (
@@ -34,10 +33,18 @@ const Dom = ({ className, pageCount, state, setState, setEditorWidth }: DomProps
           ))}
         </div>
       ))}
-      <Editor
-        ref={ref => (ref ? setEditorWidth((ref as any).editorContainer.clientWidth) : undefined)}
-        editorState={state}
-        onChange={setState}
+      <div
+        ref={ref => (ref ? setEditorWidth(ref.clientWidth) : undefined)}
+        contentEditable
+        onInput={e => {
+          let text: string[] = [];
+          for (let i = 0; i < e.currentTarget.childNodes.length; i += 1) {
+            const child = e.currentTarget.childNodes.item(i);
+            text.push(child.textContent || '');
+          }
+          setEditorWidth(e.currentTarget.clientWidth);
+          setText(text.join('\n'));
+        }}
       />
     </div>
   </div>
@@ -112,14 +119,14 @@ const Styled = styled(Dom)({
 });
 
 export default function Genko() {
-  const [state, setState] = React.useState(EditorState.createEmpty());
+  const [text, setText] = React.useState('');
   const [width, setWidth] = React.useState(0);
 
   return (
     <Styled
       pageCount={Math.ceil(width / 340)}
-      state={state}
-      setState={setState}
+      text={text}
+      setText={setText}
       setEditorWidth={setWidth}
     />
   );

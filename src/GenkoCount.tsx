@@ -27,7 +27,7 @@ const Styled = styled(Dom)({
     display: 'inline-block',
     textAlign: 'center',
     lineHeight: '10px',
-    width: '20px',
+    width: '26px',
     borderBottom: 'solid 1px #BC4'
   }
 });
