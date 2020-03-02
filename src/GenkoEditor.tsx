@@ -46,12 +46,14 @@ export default function GenkoEditor({ initText, onInput, onResize }: Props) {
   const domRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    if (domRef && domRef.current)
+    if (domRef && domRef.current) {
       domRef.current.innerHTML =
         initText
           ?.split('\n')
           ?.map(t => `<div>${t || '<br>'}</div>`)
           .join('') || '';
+      onResize(domRef.current.clientWidth);
+    }
   }, []);
 
   return <Styled domRef={domRef} initText={initText} onInput={onInput} onResize={onResize} />;
