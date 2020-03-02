@@ -118,7 +118,12 @@ const squares: CSSObject = {
 
 const Styled = styled(Dom)({
   height: 565,
-  margin: '20px auto',
+  position: 'absolute',
+  margin: 'auto',
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
   '& > div': squares
 });
 
