@@ -4,12 +4,6 @@ import styled, { createGlobalStyle } from 'styled-components';
 import Genko from './Genko';
 
 const GlobalStyle = createGlobalStyle({
-  '@font-face': {
-    fontFamily: 'mincho',
-    fontStyle: 'normal',
-    fontWeight: 'normal',
-    src: 'url("/GenEiKoburiMin6-R.woff") format("woff")'
-  },
   '@font-face ': {
     fontFamily: 'roboto',
     fontStyle: 'normal',
