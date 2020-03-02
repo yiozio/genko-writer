@@ -10,7 +10,7 @@ const Dom = ({ className }: DomProps) => <div className={className}>20 × 20</di
 const Styled = styled(Dom)({
   position: 'absolute',
   left: '0',
-  bottom: '-18px',
+  bottom: '25px',
   color: '#BC4',
   fontSize: '8px',
   fontFamily: 'roboto'

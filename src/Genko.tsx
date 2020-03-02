@@ -25,16 +25,22 @@ const Dom = ({ className, pageCount, initText, onInput, onResizeEditor }: DomPro
           ) : (
             <GenkoDesc />
           )}
-          {Array.from(Array(10)).map((_, j) => (
-            <div key={j}>
-              {Array.from(Array(19)).map((_, k) => (
-                <div key={k} />
-              ))}
-            </div>
-          ))}
+          <div>
+            {Array.from(Array(10)).map((_, j) => (
+              <div key={j}>
+                {Array.from(Array(20)).map((_, k) => (
+                  <div key={k} />
+                ))}
+              </div>
+            ))}
+          </div>
+          {i === 0 ? (
+            <GenkoEditor initText={initText} onInput={onInput} onResize={onResizeEditor} />
+          ) : (
+            undefined
+          )}
         </div>
       ))}
-      <GenkoEditor initText={initText} onInput={onInput} onResize={onResizeEditor} />
     </div>
   </div>
 );
@@ -52,47 +58,67 @@ const squaresRow: CSSObject = {
   '& > div': {
     width: '100%',
     height: 23,
-    borderBottom: 'solid 1px #BC4'
+    borderBottom: 'solid 1px #BC4',
+    '&:last-child': {
+      borderBottom: 'none'
+    }
   }
 };
 const squaresInput: CSSObject = {
   position: 'absolute',
-  right: 6,
+  right: 54,
   top: 43,
-  height: 481
+  height: 481,
+  zIndex: 1
 };
 const squares: CSSObject = {
-  position: 'relative',
-  height: 'calc(100% - 86px)',
-  padding: '42px 0',
+  height: '100%',
   display: 'flex',
   flexFlow: 'row-reverse nowrap',
-  background: '#FFE',
   overflowX: 'scroll',
   overflowY: 'hidden',
 
-  '& > div:not(:last-child)': {
+  '& > div': {
     position: 'relative',
-    height: '100%',
-    border: 'solid 1px #BC4',
-    borderLeft: 'solid 1px #000',
-    borderRight: 'none',
-    display: 'flex',
-    flexFlow: 'row-reverse nowrap',
+    height: 'calc(100% - 84px)',
+    paddingTop: 42,
+    paddingBottom: 42,
+    background: '#FFE',
 
     '&:first-child': {
+      paddingRight: '48px',
+      '& > div:first-child': {
+        right: 48
+      }
+    },
+    '&:last-child': {
+      paddingLeft: '48px',
+      '& > div:first-child': {
+        left: 48
+      }
+    },
+    '& > div:nth-child(2)': {
+      border: 'solid 1px #BC4',
+      borderLeft: 'solid 1px #000',
+      borderRight: 'none',
+      display: 'flex',
+      flexFlow: 'row-reverse nowrap',
+
+      '& > div': squaresRow
+    },
+    '&:first-child > div:nth-child(2)': {
       borderRight: 'solid 1px #BC4'
     },
-    '& > div:not(:first-child)': squaresRow
-  },
-  '& > div:last-child': squaresInput
+    '&:nth-child(2n+1) > div:nth-child(2)': {
+      borderLeftStyle: 'dashed'
+    },
+    '& > div:nth-child(3)': squaresInput
+  }
 };
 
 const Styled = styled(Dom)({
-  background: '#FFE',
   height: 565,
   margin: '20px auto',
-  position: 'relative',
   '& > div': squares
 });
 
@@ -101,7 +127,7 @@ export default function Genko() {
 
   return (
     <Styled
-      pageCount={Math.ceil(width / 340)}
+      pageCount={Math.ceil(width / (340 * 2)) * 2}
       initText={sessionStorage.getItem('text')}
       onInput={text => sessionStorage.setItem('text', text)}
       onResizeEditor={setWidth}
