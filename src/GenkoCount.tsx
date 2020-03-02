@@ -21,13 +21,13 @@ const Styled = styled(Dom)({
   top: '-16px',
   color: '#BC4',
   fontSize: '8px',
-  fontFamily: 'sans-serif',
+  fontFamily: 'roboto',
   '& > span': {
     color: '#000',
     display: 'inline-block',
     textAlign: 'center',
     lineHeight: '10px',
-    width: '26px',
+    width: '35px',
     borderBottom: 'solid 1px #BC4'
   }
 });

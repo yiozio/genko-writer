@@ -13,7 +13,7 @@ const Styled = styled(Dom)({
   bottom: '-18px',
   color: '#BC4',
   fontSize: '8px',
-  fontFamily: 'sans-serif'
+  fontFamily: 'roboto'
 });
 
 export default function GenkoDesc() {

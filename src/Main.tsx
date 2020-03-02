@@ -8,7 +8,13 @@ const GlobalStyle = createGlobalStyle({
     fontFamily: 'mincho',
     fontStyle: 'normal',
     fontWeight: 'normal',
-    src: 'url("/GenEiKoburiMin6-R.ttf") format("truetype")'
+    src: 'url("/GenEiKoburiMin6-R.woff") format("woff")'
+  },
+  '@font-face ': {
+    fontFamily: 'roboto',
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    src: 'url("/Roboto-Regular.woff") format("woff")'
   },
   body: {
     overflow: 'hidden'
