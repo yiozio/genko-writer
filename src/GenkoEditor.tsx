@@ -44,6 +44,17 @@ const Dom = ({
           r.collapse(false);
           s.removeAllRanges();
           s.addRange(r);
+          let text: string[] = [''];
+          for (let i = 0; i < e.currentTarget.childNodes.length; i += 1) {
+            const child = e.currentTarget.childNodes.item(i);
+            if (child.nodeName === 'BR') {
+              text.push('');
+            } else {
+              text[text.length - 1] += child.textContent || '';
+            }
+          }
+          onResize(e.currentTarget.clientWidth);
+          onInput(text.join('\n'));
         }
         e.preventDefault();
       } else if (e.key.substring(0, 5) === 'Arrow') {
