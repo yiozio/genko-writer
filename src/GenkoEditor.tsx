@@ -148,7 +148,7 @@ export default function GenkoEditor({ initText, onInput, onResize }: Props) {
         }
       }}
       onCompositionStart={() => setInComposition(true)}
-      onCompositionEnd={() => setInComposition(false)}
+      onCompositionEnd={() => setTimeout(() => setInComposition(false), 1)}
     />
   );
 }
