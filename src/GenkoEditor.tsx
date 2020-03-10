@@ -107,8 +107,7 @@ const Styled = styled(Dom)({
   lineHeight: '34px',
   letterSpacing: 1,
   color: '#000',
-  fontFamily:
-    '"游明朝", YuMincho, "Hiragino Mincho ProN W3", "ヒラギノ明朝 ProN W3", "Hiragino Mincho ProN", "HG明朝E", "ＭＳ Ｐ明朝", "ＭＳ 明朝", serif',
+  fontFamily: 'mincho',
   '&:focus, &:active': {
     boxShadow: 'none',
     border: 'none',
