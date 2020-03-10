@@ -6,109 +6,31 @@ type Props = {
   onInput: (text: string) => void;
   onResize: (width: number) => void;
 };
-type DomProps = Props & {
+type DomProps = {
   className?: string;
   domRef: React.RefObject<HTMLDivElement>;
-  inComposition: boolean;
+  onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => void;
   onCompositionStart: () => void;
   onCompositionEnd: () => void;
+  onInput: () => void;
 };
 
 const Dom = ({
   className,
   domRef,
-  onInput,
-  onResize,
-  inComposition,
+  onKeyDown,
   onCompositionStart,
-  onCompositionEnd
+  onCompositionEnd,
+  onInput
 }: DomProps) => (
   <div
     className={className}
     ref={domRef}
     contentEditable
-    onKeyDown={e => {
-      if (e.key === 'Enter') {
-        if (inComposition) return;
-        const s = window.getSelection();
-        if (s) {
-          s.deleteFromDocument();
-          const r = s.getRangeAt(0);
-          if (e.currentTarget.lastChild?.nodeName !== 'BR') {
-            e.currentTarget.append(document.createElement('br'));
-          }
-          const br = document.createElement('br');
-          r.insertNode(br);
-          r.setStartAfter(br);
-          r.setEndAfter(br);
-          r.collapse(false);
-          s.removeAllRanges();
-          s.addRange(r);
-          let text: string[] = [''];
-          for (let i = 0; i < e.currentTarget.childNodes.length; i += 1) {
-            const child = e.currentTarget.childNodes.item(i);
-            if (child.nodeName === 'BR') {
-              text.push('');
-            } else {
-              text[text.length - 1] += child.textContent || '';
-            }
-          }
-          onResize(e.currentTarget.clientWidth);
-          onInput(text.join('\n'));
-        }
-        e.preventDefault();
-      } else if (e.key.substring(0, 5) === 'Arrow') {
-        const s = window.getSelection();
-        const anchor = s?.anchorNode;
-        if (s && anchor) {
-          const r = s.getRangeAt(0);
-          let node = anchor;
-          let offset = s.anchorOffset;
-          if (e.key === 'ArrowUp') {
-            if (offset > 0) {
-              offset -= 1;
-            } else {
-              node = anchor.previousSibling || anchor;
-              if (node !== anchor) offset = node.textContent?.length || 0;
-            }
-          } else if (e.key === 'ArrowDown') {
-            const length = node.textContent?.length || 0;
-            if (offset < length) {
-              offset += 1;
-            } else {
-              node = anchor.nextSibling || anchor;
-              if (node !== anchor) offset = 0;
-            }
-          } else if (e.key === 'ArrowLeft') {
-            node = anchor.nextSibling || anchor;
-            offset = node !== anchor ? 0 : node.textContent?.length || 0;
-          } else {
-            node = anchor.previousSibling || anchor;
-            offset = 0;
-          }
-          r.setStart(node, offset);
-          r.setEnd(node, offset);
-          s.removeAllRanges();
-          s.addRange(r);
-        }
-        e.preventDefault();
-      }
-    }}
+    onKeyDown={onKeyDown}
     onCompositionStart={onCompositionStart}
     onCompositionEnd={onCompositionEnd}
-    onInput={e => {
-      let text: string[] = [''];
-      for (let i = 0; i < e.currentTarget.childNodes.length; i += 1) {
-        const child = e.currentTarget.childNodes.item(i);
-        if (child.nodeName === 'BR') {
-          text.push('');
-        } else {
-          text[text.length - 1] += child.textContent || '';
-        }
-      }
-      onResize(e.currentTarget.clientWidth);
-      onInput(text.join('\n'));
-    }}
+    onInput={onInput}
   />
 );
 
@@ -141,13 +63,90 @@ export default function GenkoEditor({ initText, onInput, onResize }: Props) {
     }
   }, []);
 
+  const setText = () => {
+    if (!domRef.current) return;
+    let text: string[] = [''];
+    for (let i = 0; i < domRef.current.childNodes.length; i += 1) {
+      const child = domRef.current.childNodes.item(i);
+      if (child.nodeName === 'BR') {
+        text.push('');
+      } else {
+        text[text.length - 1] += child.textContent || '';
+      }
+    }
+    onResize(domRef.current.clientWidth);
+    onInput(text.join('\n'));
+  };
+  const setNewLine = () => {
+    if (inComposition) return;
+    const s = window.getSelection();
+    if (!s) return;
+    const target = domRef.current;
+    if (!target) return;
+
+    s.deleteFromDocument();
+    const r = s.getRangeAt(0);
+    if (target.lastChild?.nodeName !== 'BR') {
+      target.append(document.createElement('br'));
+    }
+    const br = document.createElement('br');
+    r.insertNode(br);
+    r.setStartAfter(br);
+    r.setEndAfter(br);
+    r.collapse(false);
+    s.removeAllRanges();
+    s.addRange(r);
+    setText();
+  };
+  const moveCursor = (key: string) => {
+    const s = window.getSelection();
+    const anchor = s?.anchorNode;
+    if (s && anchor) {
+      const r = s.getRangeAt(0);
+      let node = anchor;
+      let offset = s.anchorOffset;
+      if (key === 'ArrowUp') {
+        if (offset > 0) {
+          offset -= 1;
+        } else {
+          node = anchor.previousSibling || anchor;
+          if (node !== anchor) offset = node.textContent?.length || 0;
+        }
+      } else if (key === 'ArrowDown') {
+        const length = node.textContent?.length || 0;
+        if (offset < length) {
+          offset += 1;
+        } else {
+          node = anchor.nextSibling || anchor;
+          if (node !== anchor) offset = 0;
+        }
+      } else if (key === 'ArrowLeft') {
+        node = anchor.nextSibling || anchor;
+        offset = node !== anchor ? 0 : node.textContent?.length || 0;
+      } else {
+        node = anchor.previousSibling || anchor;
+        offset = 0;
+      }
+      r.setStart(node, offset);
+      r.setEnd(node, offset);
+      s.removeAllRanges();
+      s.addRange(r);
+    }
+  };
+
   return (
     <Styled
       domRef={domRef}
-      initText={initText}
-      onInput={onInput}
-      onResize={onResize}
-      inComposition={inComposition}
+      onInput={setText}
+      onKeyDown={e => {
+        if (e.key === 'Enter') {
+          setNewLine();
+          e.preventDefault();
+        } else if (e.key.substring(0, 5) === 'Arrow') {
+          moveCursor(e.key);
+          e.preventDefault();
+        }
+      }}
       onCompositionStart={() => setInComposition(true)}
       onCompositionEnd={() => setInComposition(false)}
     />
