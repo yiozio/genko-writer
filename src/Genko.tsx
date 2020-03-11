@@ -80,7 +80,7 @@ const squares: CSSObject = {
 
   '& > div': {
     position: 'relative',
-    height: 'calc(100% - 84px)',
+    height: 23 * 20 + 1 * 19 + 2,
     paddingTop: 42,
     paddingBottom: 42,
     background: '#FFE',
